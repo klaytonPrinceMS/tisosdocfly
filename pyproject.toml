@@ -1,0 +1,149 @@
+[project]
+name = "skyrover"
+version = "0.1.0"
+description = "Skyrover — projeto Python com Poetry, Python 3.13 e ferramentas de qualidade/segurança."
+authors = [
+    { name = "Klayton Prince", email = "146005906+klaytonPrinceMS@users.noreply.github.com" }
+]
+readme = "README.md"
+license = "MIT"
+# 3.13 fixo: o Poetry escolhe o interpretador por esta faixa. O teto `<3.14`
+# impede que o resolvedor suba para o 3.14 só porque ele também está instalado.
+requires-python = ">=3.13,<3.14"
+# As dependências ficam em [tool.poetry.*] — `dynamic` declara isso ao PEP 621
+# para o `poetry check` não reclamar de metadados faltando.
+dynamic = ["dependencies"]
+
+# Dependências de EXECUÇÃO. Fonte única de verdade: este arquivo.
+[tool.poetry.dependencies]
+python = ">=3.13,<3.14"
+# Núcleo web / UI (mesmo padrão da intranet).
+nicegui = "==3.15.0"
+fastapi = ">=0.115"
+uvicorn = ">=0.30"
+# Banco de dados — SQLAlchemy + backend duplo SQLite/PostgreSQL.
+sqlalchemy = ">=2.0"
+psycopg2-binary = ">=2.9"
+# Autenticação / segurança.
+bcrypt = ">=5.0.0"
+# Agendamento (backup por módulo e rotinas do núcleo).
+apscheduler = ">=3.10,<4"
+# CLI do assistente de ativação (argumentos + cores).
+typer = ">=0.12"
+rich = ">=13.0"
+# Pipeline de imagem, índices e laudo.
+numpy = ">=1.26"
+pillow = ">=10.0"
+reportlab = ">=4.0"
+# Log estruturado. Toda função que trata exceção deve registrar a causa.
+loguru = ">=0.7.3"
+
+# Dependências de DESENVOLVIMENTO / TESTE / SEGURANÇA.
+# `poetry install` instala por padrão; `poetry install --without dev` só runtime.
+[tool.poetry.group.dev.dependencies]
+# --- QA / Testes ---
+pytest = ">=8.0"
+pytest-cov = ">=7.0.0"
+# pytest-env: habilita a chave `env` de [tool.pytest.ini_options].
+pytest-env = ">=1.1.0"
+# pytest-playwright: testes E2E de UI (os browsers vêm de `playwright install`).
+pytest-playwright = ">=0.9.0"
+faker = ">=22.0"
+# --- Lint / análise estática ---
+# `undefined name` é bloqueante: um try/except amplo pode engolir NameError.
+pyflakes = ">=3.2.0"
+# --- SAST ---
+bandit = ">=1.9.0"
+# `semgrep` é a ÚNICA dependência fixada com `==`, e é deliberado: um SAST que
+# muda de regra a cada release muda o que "limpo" significa.
+semgrep = "1.181.0"
+# --- Auditoria de dependências ---
+pip-audit = ">=2.10.0"
+safety = ">=3.8.0"
+# --- Documentação (tema readthedocs + docstrings do código) ---
+mkdocs = ">=1.6.1"
+mkdocstrings-python = "^2.0.9"
+pymdown-extensions = ">=10.0"
+# --- Runner de comandos do projeto ---
+taskipy = "^1.14.1"
+
+# --- Grafo de conhecimento (grupo OPCIONAL) ---
+# Não entra no `poetry install` padrão:
+#   poetry install --with graph
+[tool.poetry.group.graph]
+optional = true
+
+[tool.poetry.group.graph.dependencies]
+graphifyy = { version = ">=0.9.0", extras = ["sql", "postgres", "pdf"] }
+
+[tool.taskipy.tasks]
+# =====================================================================
+# taskipy — runner de comandos do projeto (dependência do grupo `dev`).
+# `task --list` mostra tudo. Sem argumento, `task` não roda nada.
+# =====================================================================
+
+# ── Ambiente ───────────────────────────────────────────────────────────
+install = "poetry install"
+"install:runtime" = "poetry install --without dev"
+"install:graph" = "poetry install --with graph"
+
+# ── Execução ───────────────────────────────────────────────────────────
+start = "python main.py"
+stop = "fuser -k 8080/tcp 2>/dev/null || true"
+
+# ── Testes ─────────────────────────────────────────────────────────────
+teste = "pytest"
+"teste:cov" = "pytest --cov=src --cov-report=term-missing"
+"teste:e2e" = "python -m pytest tests/pw_*.py -v -m e2e"
+
+# ── Qualidade ──────────────────────────────────────────────────────────
+# Gate BLOQUEANTE: sai com código != 0 se houver `undefined name`.
+lint = 'N=$(python -m pyflakes main.py src/mod_*/*.py src/mod_*/*/*.py tests/*.py | grep -c "undefined name" || true); echo "undefined name: $N"; test "$N" -eq 0'
+verificar = "task lint && task teste"
+bandit = "bandit -r src/"
+semgrep = "semgrep --config auto src/"
+audit = "pip-audit"
+
+# ── Documentação ───────────────────────────────────────────────────────
+docs = "mkdocs build --strict"
+"docs:servir" = "mkdocs serve"
+"docs:limpa" = "rm -rf site"
+
+# ── Grafo (AGENTS.md §graphify) ────────────────────────────────────────
+"grafo:extract" = "graphify extract . --code-only"
+"grafo:update" = "graphify update ."
+"grafo:relatorio" = "graphify cluster-only . --no-viz --no-label"
+"grafo:saude" = "graphify diagnose"
+
+# ── Multiespectral (Embrapa, 2022) ─────────────────────────────────────
+# poetry run task multiespectral -- --r R.tif --nir NIR.tif --out saida
+multiespectral = "python -m mod_skyrover.multiespectral"
+linhas = "python -m mod_skyrover.linhas_plantio"
+rf = "python -m mod_skyrover.rf_scan"
+
+[tool.poetry]
+# Aplicação, não pacote: o entry point é `main.py` e o código vive em `src/`.
+# O Poetry cuida do AMBIENTE e do LOCK — não empacota nem distribui nada.
+package-mode = false
+
+[tool.pytest.ini_options]
+# `testpaths` limita a coleta ao runner; sem isso o pytest tentaria coletar os
+# scripts standalone (que chamam sys.exit no import) e os E2E sem servidor.
+testpaths = ["tests/test_suite.py"]
+pythonpath = [".", "src"]
+addopts = "--strict-markers -ra --tb=short"
+# PYTHONUTF8=1: o projeto é PT-BR e depende de UTF-8 no console (acentos).
+env = ["PYTHONUTF8=1"]
+markers = [
+    "security: testes de segurança (traversal, XSS, B608, owner-isolation, LGPD)",
+    "e2e: Playwright E2E (requer a aplicação no ar)",
+    "slow: teste lento (>30s) — pular em CI rápido com -m \"not slow\"",
+    "unit: teste unitário rápido",
+    "graphify: saúde do grafo (affected, diagnose)",
+    "k6: carga/performance — apenas localhost/staging, NUNCA produção",
+    "docs: mkdocs build --strict e docs online vs local",
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

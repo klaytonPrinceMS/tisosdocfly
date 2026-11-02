@@ -1,0 +1,374 @@
+/* ==========================================================================
+   PROVISÓRIO — folha de estilo dos 4 padrões visuais (Login + Home).
+   Estética de app social / mensageiro, pedida pelo responsável:
+   resemble Facebook e WhatsApp.
+
+   PROVISÓRIO: apagar junto com `mod_intranet/preview_estilos.py`.
+   EN: TEMPORARY stylesheet for the 4 social-app patterns. Delete along with
+   `mod_intranet/preview_estilos.py`.
+
+   As cores vêm por custom property (`--pe-*`), definidas no `<style>` que o
+   Python injeta. Assim o admin continua mandando em `cor_principal`/`cor_fundo`
+   e cada padrão mantém a própria identidade.
+
+   Todo seletor é escopado em `.pe-<padrão>` para não vazar: os quatro podem
+   coexistir no mesmo DOM (a barra de alternador mostra os quatro) sem que um
+   pise no outro.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Base comum aos 4: cartão, campo, botão, papel do documento.
+   -------------------------------------------------------------------------- */
+[class^="pe-"] {
+  --pe-borda: rgba(0, 0, 0, .10);
+}
+
+body:has(.pe-azul) .q-card,
+body:has(.pe-verde) .q-card,
+body:has(.pe-roxo) .q-card,
+body:has(.pe-preto) .q-card {
+  background: var(--pe-superficie);
+  border-radius: var(--pe-raio);
+  box-shadow: var(--pe-sombra);
+  border: 0;
+}
+
+/* A página inteira com a cor de fundo do padrão.
+   A classe `pe-*` fica num wrapper DENTRO do `.q-page` (e não no <body>), por
+   isso o seletor precisa de `body:has(...)` — assim o fundo desce até o
+   `<body>` sem precisar de JavaScript. Suportado em todos os navegadores
+   atuais (Chrome 105+, Safari 15.4+, Firefox 121+). */
+body:has(.pe-azul) .q-page { background: var(--pe-fundo); }
+body:has(.pe-verde) .q-page { background: var(--pe-fundo); }
+body:has(.pe-roxo) .q-page { background: var(--pe-fundo); }
+body:has(.pe-preto) .q-page { background: var(--pe-fundo); }
+body:has(.pe-azul) { background: var(--pe-fundo); }
+body:has(.pe-verde) { background: var(--pe-fundo); }
+body:has(.pe-roxo) { background: var(--pe-fundo); }
+body:has(.pe-preto) { background: var(--pe-fundo); }
+
+/* Campo de texto: no Facebook/Instagram é caixa cheia; no WhatsApp é caixa
+   arredondada e sem borda pesada. */
+body:has(.pe-azul) .q-field--outlined .q-field__control,
+body:has(.pe-azul) .q-field--standard .q-field__control,
+body:has(.pe-roxo) .q-field--outlined .q-field__control,
+body:has(.pe-roxo) .q-field--standard .q-field__control,
+body:has(.pe-preto) .q-field--outlined .q-field__control,
+body:has(.pe-preto) .q-field--standard .q-field__control {
+  border-radius: 6px;
+  background: var(--pe-fundo);
+  border: 1px solid var(--pe-borda);
+}
+
+body:has(.pe-verde) .q-field__control {
+  border-radius: 8px;
+  background: #f0f2f5;
+  border: 1px solid transparent;
+  /* Padding LATERAL de 3px (05/10/2026, decisão do responsável).
+     O Quasar traz `padding: 0 12px` aqui, e são esses 12px de cada lado que
+     foram apontados como "borda larga": o espaço entre a moldura do campo e o
+     texto. Num campo de SENHA esse espaço vira caractere que não aparece.
+
+     Medido: com 12px o input útil ficava com 485px numa janela estreita; com
+     3px sobram 503px. São 18px a mais por campo — o suficiente para a senha
+     caber mais legível sem mexer na largura da coluna.
+
+     Só o lateral muda: o `0` do vertical é o que dá a altura de 40px do campo,
+     e mexer nele muda a altura de todos os campos das três telas. */
+  padding-left: 3px;
+  padding-right: 3px;
+}
+body:has(.pe-verde) .q-field__control:before {
+  border-bottom: 2px solid var(--pe-primaria) !important;
+  opacity: .35;
+}
+body:has(.pe-verde) .q-field--focused .q-field__control:after {
+  border-bottom: 2px solid var(--pe-primaria) !important;
+}
+
+/* Cabeçalho da Home na cor da marca.
+   O cabeçalho é montado pelo layout de 4 partes, FORA do wrapper do padrão, e
+   ainda traz a classe `bg-primary` do Quasar — que é `!important` dentro de
+   uma cascade layer e por isso não pode ser vencido por seletor nenhum aqui.
+   A saída é a mesma do botão: mexer no TOKEN. Redefinimos `--q-primary` no
+   `.q-layout` (ancestral do cabeçalho) com `!important`, que aí sim vence a
+   declaração inline que `ui.colors()` deixa no layout, e o cabeçalho herda a
+   cor do padrão. */
+
+/* Botão primário do login.
+   NÃO tentamos pintar o fundo aqui. O Quasar declara
+   `.bg-primary { background: var(--q-primary) !important }` dentro de uma
+   cascade layer, e em `!important` a camada vence QUALQUER regra nossa que
+   esteja fora de camada — por mais específica que ela seja. Por isso a cor do
+   botão vem de `--q-primary`, que o Python redefine no wrapper do padrão
+   (ver `aplicar` em `preview_estilos.py`). Aqui só o FORMATO, que o Quasar
+   não disputa. */
+body:has(.pe-azul) .preview-entrar,
+body:has(.pe-roxo) .preview-entrar,
+body:has(.pe-preto) .preview-entrar {
+  border-radius: 6px;
+  font-weight: 600;
+  letter-spacing: .01em;
+}
+body:has(.pe-verde) .preview-entrar {
+  border-radius: 24px;
+  font-weight: 600;
+  text-transform: none;
+  padding: 0 22px;
+}
+
+/* O botão ATIVO do alternador usa a cor do próprio padrão, para a escolha
+   ficar óbvia. Mesma razão do `!important` acima (estilo inline do tema). */
+/* Todos os botões do alternador (ativo e inativos) com o mesmo raio, para o
+   conjunto parecer parte da tela em vez de botões soltos. */
+.pe-alternador .q-btn {
+  border-radius: 8px;
+}
+
+/* Cores do alternador.
+   O `ui.button` do NiceGUI já sai com a classe `text-primary` do Quasar, que é
+   `color: var(--q-primary) !important` DENTRO de uma cascade layer — por isso
+   nenhuma regra `color` nossa, nem com `!important`, a vence. A saída é a de
+   sempre: mexer no TOKEN, no próprio botão. Assim o ativo lê a cor de texto
+   do padrão e o inativo o cinza, sem nenhuma disputa de cascata. */
+.pe-alt--ativo {
+  --q-primary: var(--pe-primaria_texto);
+  background: var(--pe-primaria) !important;
+  font-weight: 600;
+}
+.pe-alt--inativo {
+  --q-primary: rgba(0, 0, 0, .55);
+}
+.pe-alt--inativo:hover {
+  background: rgba(0, 0, 0, .06) !important;
+}
+.pe-alt-texto {
+  color: rgba(0, 0, 0, .45) !important;
+}
+
+/* No rodapé o menu ocupa o espaço do MEIO e fica EXATAMENTE no meio da tela.
+   Com `justify-content: space-between` (o padrão antigo do rodapé) e três
+   itens, o menu encosta no item da esquerda e sai do centro — o item da
+   esquerda ("INTRANET Básica — uso interno") é mais largo que o da direita (a
+   versão), e a sobra não se divide igual. A grade de três colunas com as duas
+   laterais IGUAIS resolve: a coluna do meio fica no meio geométrico da linha,
+   e as laterais continuam nos seus cantos, com tudo o que havia antes.
+
+   `minmax(0, 1fr)` para o rodapé longo não espremer o menu. */
+[data-testid="rodape-sistema"] > .nicegui-row:first-child {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.5rem;
+}
+[data-testid="rodape-sistema"] > .nicegui-row:first-child > :first-child {
+  justify-self: start;
+  text-align: left;
+}
+[data-testid="rodape-sistema"] > .nicegui-row:first-child > :last-child {
+  justify-self: end;
+}
+[data-testid="rodape-sistema"] .pe-alternador {
+  justify-self: center;
+  flex: 0 0 auto;
+}
+
+/* No rodapé o fundo é o `bg-grey-8` do Quasar (escuro), e o cinza de cima
+   sumiria nele. O rodapé é o único lugar com fundo escuro, então as cores
+   claras ficam escopadas nele — e é lá que o menu vive. */
+[data-testid="rodape-sistema"] .pe-alt--inativo {
+  --q-primary: rgba(255, 255, 255, .75);
+}
+[data-testid="rodape-sistema"] .pe-alt--inativo:hover {
+  background: rgba(255, 255, 255, .14) !important;
+}
+[data-testid="rodape-sistema"] .pe-alt-texto {
+  color: rgba(255, 255, 255, .55) !important;
+}
+
+/* --------------------------------------------------------------------------
+   1) AZUL — nome do produto grande e azul ACIMA do cartão branco;
+      botão azul de largura total. É o login clássico do Facebook.
+   -------------------------------------------------------------------------- */
+body:has(.pe-azul) .pe-aviso {
+  background: #edf2fb;
+  border-left: 4px solid var(--pe-primaria);
+  border-radius: 4px;
+}
+body:has(.pe-azul) .pe-caixa-login {
+  background: var(--pe-superficie);
+  border-radius: var(--pe-raio);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, .14);
+  border-top: 1px solid var(--pe-borda);
+  border-bottom: 1px solid var(--pe-borda);
+}
+body:has(.pe-azul) .pe-marca {
+  color: var(--pe-primaria);
+  font-weight: 800;
+  text-shadow: none;
+}
+
+/* --------------------------------------------------------------------------
+   2) VERDE — tela dividida: painel teal à esquerda, formulário branco
+      à direita. É a assinatura do WhatsApp Web.
+   -------------------------------------------------------------------------- */
+body:has(.pe-verde) .pe-painel {
+  background: var(--pe-primaria);
+  color: #fff;
+}
+body:has(.pe-verde) .pe-painel .pe-sistema {
+  font-size: 1.9rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+body:has(.pe-verde) .q-page,
+body:has(.pe-verde) {
+  background-color: var(--pe-fundo);
+  background-image: radial-gradient(rgba(0, 0, 0, .022) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+/* Bolha de conversa: canto "cauda" no canto inferior esquerdo. */
+body:has(.pe-verde) .pe-aviso {
+  background: #dcf8c6;
+  border-radius: 8px 8px 8px 2px;
+  color: #1b3a1f;
+}
+body:has(.pe-verde) .pe-caixa-login {
+  background: var(--pe-superficie);
+  border-radius: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .16);
+}
+body:has(.pe-verde) .pe-marca {
+  color: var(--pe-primaria);
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   3) ROXO — gradiente roxo -> rosa, bolhas muito arredondadas.
+   -------------------------------------------------------------------------- */
+body:has(.pe-roxo) .pe-topo {
+  background: linear-gradient(90deg, var(--pe-primaria) 0%, var(--pe-primaria_2) 100%);
+  color: #fff;
+  border-radius: 0 0 18px 18px;
+  box-shadow: 0 3px 12px rgba(120, 70, 200, .28);
+}
+body:has(.pe-roxo) .pe-topo .pe-sistema {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+body:has(.pe-roxo) .preview-entrar {
+  border-radius: 22px;
+}
+body:has(.pe-roxo) .pe-aviso {
+  background: linear-gradient(90deg, #ede9fe 0%, #fce7f3 100%);
+  border-radius: 16px;
+  color: #3b2a5a;
+}
+body:has(.pe-roxo) .pe-caixa-login {
+  background: var(--pe-superficie);
+  border-radius: 20px;
+  box-shadow: 0 8px 28px rgba(120, 70, 200, .16);
+}
+body:has(.pe-roxo) .pe-marca {
+  background: linear-gradient(90deg, var(--pe-primaria) 0%, var(--pe-primaria_2) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 800;
+}
+
+/* --------------------------------------------------------------------------
+   4) PRETO — monocromático, aro colorido no avatar, muito "clean".
+   -------------------------------------------------------------------------- */
+body:has(.pe-preto) .pe-aro {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(45deg, #f9ce34 0%, #ee2a7b 50%, #6228d7 100%);
+  flex: 0 0 auto;
+}
+body:has(.pe-preto) .pe-aro-interna {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--pe-superficie);
+  align-items: center;
+  justify-content: center;
+  color: var(--pe-primaria);
+}
+body:has(.pe-preto) .pe-aviso {
+  background: var(--pe-superficie);
+  border: 1px solid var(--pe-borda);
+  border-radius: 12px;
+}
+body:has(.pe-preto) .pe-caixa-login {
+  background: var(--pe-superficie);
+  border: 1px solid var(--pe-borda);
+  border-radius: 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .06);
+}
+body:has(.pe-preto) .pe-marca {
+  color: var(--pe-primaria);
+  font-weight: 600;
+  letter-spacing: .02em;
+}
+
+/* --------------------------------------------------------------------------
+   Responsivo — o login tem que funcionar em 360 px.
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  /* WhatsApp: abaixo de 900 px o painel sai de cena e sobra o formulário,
+     como no WhatsApp Web no celular. O cartão deixa de ser "colado" na
+     margem da tela e vira uma folha centralizada com cantos, que é como o
+     app de celular mostra. */
+  body:has(.pe-verde) .pe-painel {
+    display: none;
+  }
+  body:has(.pe-verde) .pe-caixa-login {
+    max-width: 420px;
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, .13);
+    margin: 0 auto;
+  }
+  body:has(.pe-verde) .q-page {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  body:has(.pe-azul) .pe-caixa-login,
+  body:has(.pe-roxo) .pe-caixa-login,
+  body:has(.pe-preto) .pe-caixa-login {
+    padding: 1.1rem 1rem;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, .12);
+  }
+  body:has(.pe-roxo) .pe-caixa-login {
+    border-radius: 16px;
+  }
+  body:has(.pe-preto) .pe-aro {
+    width: 46px;
+    height: 46px;
+  }
+  /* No celular a marca do Facebook não pode roubar a altura da dobra. */
+  body:has(.pe-azul) .pe-marca {
+    font-size: 1.6rem;
+  }
+}
+
+/* Foco visível (acessibilidade): o Quasar remove o outline padrão em alguns
+   controles, e um alternador de estilo precisa de foco perceptível. */
+[class^="pe-"] .q-btn:focus-visible,
+[class^="pe-"] .q-field__control:focus-visible {
+  outline: 2px solid var(--pe-primaria, #1877f2);
+  outline-offset: 2px;
+}
+
+/* Respeita quem pediu menos movimento. */
+@media (prefers-reduced-motion: reduce) {
+  [class^="pe-"] * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

@@ -1,0 +1,57 @@
+# =============================================================================
+# Grafana Datasources Provisioning - Skyrover Modular
+# =============================================================================
+# Datasources provisionadas com UIDs FIXOS para que os dashboards (dashboards/*.json)
+# possam referenciá-los de forma estável. O OTel-Metrics (http://otel-collector:8889)
+# foi removido: aquele exporter é prometheus "scrape-only" (serve só /metrics) e NÃO
+# implementa /api/v1/query; consultas via plugin prometheus Grafana retornam 404
+# "page not found". As métricas do app fluem para o Mimir (otlphttp/mimir) e são
+# queryáveis normalmente em http://mimir:9009/prometheus.
+#
+# English (header): Provisioned datasources with FIXED UIDs so dashboards can
+# reference them stably. OTel-Metrics removed: its /metrics exporter is
+# scrape-only and does not support /api/v1/query, causing Grafana panels to 404.
+# Application metrics ship to Mimir via OTLP and are queryable normally.
+# =============================================================================
+apiVersion: 1
+
+datasources:
+  # Loki - Logs
+  - name: Loki
+    type: loki
+    access: proxy
+    url: http://loki:3100
+    uid: loki
+    isDefault: false
+    editable: false
+    jsonData:
+      maxLines: 1000
+      timeout: 60
+
+  # Tempo - Traces
+  - name: Tempo
+    type: tempo
+    access: proxy
+    url: http://tempo:3200
+    uid: tempo
+    isDefault: false
+    editable: false
+    jsonData:
+      tracesToLogs:
+        datasourceUid: loki
+        filterByTraceID: true
+      tracesToMetrics:
+        datasourceUid: mim
+      nodeGraph:
+        enabled: true
+
+  # Mimir - Metricas Prometheus (recebe OTLP do collector via otlphttp/mimir)
+  - name: Mimir
+    type: prometheus
+    access: proxy
+    url: http://mimir:9009/prometheus
+    uid: mim
+    isDefault: true
+    editable: false
+    jsonData:
+      httpMethod: POST

@@ -1,0 +1,121 @@
+{
+  "uid": "intranet-logs",
+  "title": "Intranet - Logs",
+  "tags": ["intranet", "logs", "loki"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "editable": true,
+  "graphTooltip": 1,
+  "panels": [
+    {
+      "type": "logs",
+      "title": "Logs em Tempo Real",
+      "gridPos": {"h": 12, "w": 24, "x": 0, "y": 0},
+      "id": 1,
+      "datasource": {"type": "loki", "uid": "loki"},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "{service_name=~\"$service\"}",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "showLabels": true,
+        "sortOrder": "Descending",
+        "enableLogDetails": true,
+        "dedupStrategy": "none"
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Nível de Logs",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12},
+      "id": 2,
+      "datasource": {"type": "loki", "uid": "loki"},
+      "targets": [
+        {"refId": "A", "expr": "sum by (level) (rate({service_name=~\"$service\"}|~\"(?i)(error|critical|fatal)\"[$__rate_interval]))", "legendFormat": "errors"},
+        {"refId": "B", "expr": "sum by (level) (rate({service_name=~\"$service\"}|~\"(?i)(warning|warn)\"[$__rate_interval]))", "legendFormat": "warnings"},
+        {"refId": "C", "expr": "sum by (level) (rate({service_name=~\"$service\"}|~\"(?i)(info|debug|trace)\"[$__rate_interval]))", "legendFormat": "info"}
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Volume de Logs por Serviço",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12},
+      "id": 3,
+      "datasource": {"type": "loki", "uid": "loki"},
+      "targets": [
+        {"refId": "A", "expr": "sum by (service_name) (rate({service_name=~\"$service\"}[$__rate_interval]))", "legendFormat": "{{service_name}}"}
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Erros (últimas 24h)",
+      "gridPos": {"h": 4, "w": 6, "x": 0, "y": 20},
+      "id": 4,
+      "datasource": {"type": "loki", "uid": "loki"},
+      "targets": [
+        {"refId": "A", "expr": "sum(count_over_time({service_name=~\"$service\"}|~\"(?i)(error|critical|fatal)\"[24h]))"}
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"value": 0, "color": "green"},
+              {"value": 10, "color": "yellow"},
+              {"value": 100, "color": "red"}
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Total de Logs (24h)",
+      "gridPos": {"h": 4, "w": 6, "x": 6, "y": 20},
+      "id": 5,
+      "datasource": {"type": "loki", "uid": "loki"},
+      "targets": [
+        {"refId": "A", "expr": "sum(count_over_time({service_name=~\"$service\"}[24h]))"}
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"value": 0, "color": "blue"}
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      }
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "service",
+        "label": "Serviço",
+        "type": "query",
+        "datasource": {"type": "loki", "uid": "loki"},
+        "query": "label_values({service_name=~\".+\"}, service_name)",
+        "includeAll": true,
+        "multi": true,
+        "allValue": ".+",
+        "current": {"selected": true, "text": "All", "value": "$__all"}
+      }
+    ]
+  },
+  "time": {"from": "now-6h", "to": "now"}
+}

@@ -1,0 +1,53 @@
+/* Justifica textos corridos (parágrafos e itens de lista).
+   Tabelas, código, gráficos (mermaid) e admonitions (!!!) ficam de fora. */
+article .rst-content p,
+article p,
+.rst-content p {
+  text-align: justify;
+}
+article .rst-content li,
+article li,
+.rst-content li {
+  text-align: justify;
+}
+/* Largura útil: o tema readthedocs limita .wy-nav-content a ~800px.
+   Amplia de forma responsiva, sem quebrar mobile. */
+.wy-nav-content {
+  max-width: 1100px;
+}
+@media (min-width: 1600px) {
+  .wy-nav-content {
+    max-width: 1300px;
+  }
+}
+@media (max-width: 768px) {
+  .wy-nav-content {
+    max-width: 100%;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+/* Tabelas: quebra de linha dentro das células para exibir o conteúdo
+   inteiro sem scroll lateral. Blocos de código (pre) mantêm scroll. */
+.rst-content table {
+  width: 100%;
+  max-width: 100%;
+}
+.rst-content td,
+.rst-content th {
+  white-space: normal !important;
+  word-break: break-word;
+}
+.rst-content tt,
+.rst-content code {
+  white-space: normal;
+  word-break: break-word;
+}
+.rst-content pre {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.rst-content pre code {
+  white-space: pre;
+  word-break: normal;
+}

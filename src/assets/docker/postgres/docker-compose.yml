@@ -1,0 +1,34 @@
+# =============================================================================
+# PostgreSQL container for Skyrover Modular (optional backend)
+# =============================================================================
+# Suba com:
+#   cd assets/docker/postgres && docker compose up -d
+#
+# Depois, no /configuracoes → "Banco de dados", marque "PostgreSQL" e
+# REINICIE o servidor. Todos os módulos passam a usar o banco `skyrover`
+# (um schema por módulo: skyrover, blog, usuarios, auditoria, editar_pdf,
+# empenhos, solicita_impressao).
+#
+# ⚠️ Apenas desenvolvimento/staging — não exponha a porta 5432 em produção.
+# =============================================================================
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: skyrover_postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-skyrover}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-skyrover}
+      POSTGRES_DB: ${POSTGRES_DB:-skyrover}
+    ports:
+      - "5432:5432"
+    volumes:
+      - skyrover_pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-skyrover} -d ${POSTGRES_DB:-skyrover}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  skyrover_pgdata:

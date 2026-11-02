@@ -1,0 +1,156 @@
+# =============================================================================
+# Grafana OTel LGTM Stack - Skyrover Modular
+# =============================================================================
+# Stack completa de observabilidade: Grafana + Loki + Tempo + Mimir + OTel Collector
+#
+# ⚠️ APENAS DESENVOLVIMENTO/STAGING — NÃO USAR EM PRODUÇÃO.
+#    Serviços internos (Loki/Tempo/Mimir) sem autenticação e portas expostas
+#    no host; Grafana com credenciais padrão. Para produção, defina as envs
+#    GRAFANA_ADMIN_USER/GRAFANA_ADMIN_PASSWORD e não exponha portas internas.
+# 
+# Uso:
+#   docker compose up -d          # Iniciar todos os serviços
+#   docker compose down           # Parar todos os serviços
+#   docker compose logs -f        # Ver logs dos containers
+#
+# Portas:
+#   - 3000: Grafana (master/master)
+#   - 4317: OTel Collector gRPC
+#   - 4318: OTel Collector HTTP
+#   - 3100: Loki (logs)
+#   - 3200: Tempo (traces)
+#   - 9009: Mimir (métricas)
+# =============================================================================
+
+services:
+  # =============================================================================
+  # OTel Collector - Receptor central de telemetria
+  # =============================================================================
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: skyrover-otel-collector
+    restart: unless-stopped
+    command: ["--config=/etc/otel-collector-config.yml"]
+    volumes:
+      - ./config/otel-collector-config.yml:/etc/otel-collector-config.yml:ro
+    ports:
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+      - "8888:8888"   # Métricas do próprio collector
+      - "8889:8889"   # Prometheus exporter
+    depends_on:
+      - loki
+      - tempo
+      - mimir
+    networks:
+      - otel-network
+
+  # =============================================================================
+  # Loki - Armazenamento e consulta de logs
+  # =============================================================================
+  loki:
+    image: grafana/loki:latest
+    container_name: skyrover-loki
+    restart: unless-stopped
+    command: ["-config.file=/etc/loki/local-config.yaml"]
+    volumes:
+      - ./config/loki-config.yml:/etc/loki/local-config.yaml:ro
+      - loki-data:/loki
+    ports:
+      - "3100:3100"
+    networks:
+      - otel-network
+
+  # =============================================================================
+  # Tempo - Armazenamento e consulta de traces
+  # =============================================================================
+  tempo:
+    image: grafana/tempo:latest
+    container_name: skyrover-tempo
+    restart: unless-stopped
+    command: ["-config.file=/etc/tempo/tempo.yaml"]
+    volumes:
+      - ./config/tempo-config.yml:/etc/tempo/tempo.yaml:ro
+      - tempo-data:/var/tempo
+    ports:
+      - "3200:3200"   # HTTP (para consultas externas)
+      # NOTA: porta 4317 (OTLP gRPC) NÃO é mapeada para o host
+      # pois o Tempo recebe dados do OTel Collector via rede Docker interna
+      # usando o nome do serviço: tempo:4317
+    networks:
+      - otel-network
+
+  # =============================================================================
+  # Mimir - Armazenamento e consulta de métricas (compatível com Prometheus)
+  # =============================================================================
+  mimir:
+    image: grafana/mimir:latest
+    container_name: skyrover-mimir
+    restart: unless-stopped
+    command: ["-config.file=/etc/mimir/mimir.yaml"]
+    volumes:
+      - ./config/mimir-config.yml:/etc/mimir/mimir.yaml:ro
+      - mimir-data:/var/mimir
+    ports:
+      - "9009:9009"   # HTTP
+    networks:
+      - otel-network
+
+  # =============================================================================
+  # Grafana - Visualização de dashboards
+  # =============================================================================
+  grafana:
+    image: grafana/grafana:latest
+    container_name: skyrover-grafana
+    restart: unless-stopped
+    environment:
+      # Credenciais iguais ao usuário master da Skyrover (configuráveis por env)
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-master}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-master}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=http://localhost:3000
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+      # Configurações de segurança
+      - GF_SECURITY_DISABLE_GRAVATAR=true
+      - GF_AUTH_DISABLE_LOGIN_FORM=false
+      # Configurações de organização
+      - GF_ORG_NAME=Skyrover
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./config/grafana-provisioning:/etc/grafana/provisioning:ro
+      - ./config/grafana-dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "3000:3000"
+    depends_on:
+      - loki
+      - tempo
+      - mimir
+      - otel-collector
+    networks:
+      - otel-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+# =============================================================================
+# Volumes persistentes
+# =============================================================================
+volumes:
+  loki-data:
+    driver: local
+  tempo-data:
+    driver: local
+  mimir-data:
+    driver: local
+  grafana-data:
+    driver: local
+
+# =============================================================================
+# Rede dedicada para observabilidade
+# =============================================================================
+networks:
+  otel-network:
+    driver: bridge
+    name: skyrover-otel-network
