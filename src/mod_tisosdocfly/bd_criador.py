@@ -60,7 +60,7 @@ def inicializar_bancos():
             "mod_agro", "mod_vistoria_predial", "mod_seguranca",
             "mod_ambiental", "mod_obras", "mod_mapeamento",
             "mod_defesa_civil", "mod_inspecao_industrial", "mod_eventos",
-            "mod_perimetro"):
+            "mod_perimetro", "mod_video"):
         try:
             _mod = import_module(f"{_pacote}.bd_manipulador")
             if not _mod.init_db():

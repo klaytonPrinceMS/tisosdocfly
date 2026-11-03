@@ -70,6 +70,7 @@ nav:
           - Inspeção Industrial: 1_sistema/06_modulos/01_resumos/10_inspecao_industrial.md
           - Eventos: 1_sistema/06_modulos/01_resumos/11_eventos.md
           - Perímetro e Segurança: 1_sistema/06_modulos/01_resumos/12_perimetro.md
+          - Vídeos: 1_sistema/06_modulos/01_resumos/13_video.md
       - Projeto:
           - Visão de produto: 1_sistema/10_projeto/01_visao_produto/index.md
           - Arquitetura futura: 1_sistema/10_projeto/02_arquitetura_futura/index.md
@@ -101,6 +102,7 @@ nav:
       - Inspeção Industrial: 2_manuais/28_inspecao_industrial/index.md
       - Eventos: 2_manuais/29_eventos/index.md
       - Perímetro e Segurança: 2_manuais/30_perimetro/index.md
+      - Vídeos: 2_manuais/31_video/index.md
   - Testes:
       - Casos: 3_testes/01_casos/index.md
       - Plano: 3_testes/02_plano/index.md

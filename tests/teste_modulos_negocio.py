@@ -42,7 +42,7 @@ class TestModulosNegocio(unittest.TestCase):
             "tisosdocfly", "usuarios", "agro", "vistoria_predial",
             "seguranca", "ambiental", "obras", "mapeamento",
             "defesa_civil", "inspecao_industrial", "eventos",
-            "perimetro"})
+            "perimetro", "video"})
         base = os.environ["TISOSDOCFLY_DIR_BANCO"]
         for arquivo in ("db_mod_agro.db", "db_mod_vistoria_predial.db",
                         "db_mod_seguranca.db"):

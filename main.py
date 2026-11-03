@@ -657,6 +657,23 @@ def page_eventos():
         notificar("Erro ao carregar o módulo Eventos.", tipo="error")
 
 
+# ================== MÓDULO: VÍDEOS ==================
+@ui.page("/video")
+def page_video():
+    """Rota /video — baixar vídeos (YouTube e outros lugares)."""
+    try:
+        from mod_tisosdocfly.telas import pagina_restrita
+        user = pagina_restrita("Vídeos", chave_modulo="video")
+        if not user:
+            return
+        from mod_video.telas import mostrar_tela
+        mostrar_tela(user["nome"], user.get("perfil", ""))
+    except Exception as e:
+        observabilidade.get_logger("tisosdocfly").exception(
+            "page_video: erro ao renderizar Vídeos: %s", e)
+        notificar("Erro ao carregar Vídeos.", tipo="error")
+
+
 # ================== PAINEL DE RISCOS ==================
 @ui.page("/riscos")
 def page_riscos():
@@ -780,7 +797,7 @@ def page_admin_modulo(chave_modulo: str):
         elif chave_modulo in (
                 "agro", "vistoria_predial", "seguranca", "ambiental",
                 "obras", "mapeamento", "defesa_civil",
-                "inspecao_industrial", "eventos", "perimetro"):
+                "inspecao_industrial", "eventos", "perimetro", "video"):
             _mapa = {
                 "agro": ("mod_agro", "/agro", "#2E7D32",
                          "Agropecuário"),
@@ -803,6 +820,8 @@ def page_admin_modulo(chave_modulo: str):
                             "Eventos"),
                 "perimetro": ("mod_perimetro", "/perimetro", "#37474F",
                               "Perímetro e Segurança"),
+                "video": ("mod_video", "/video", "#7B1FA2",
+                          "Vídeos"),
             }
             _pacote, _rota, _cor, _nome = _mapa[chave_modulo]
             eh_admin = (perfil == "administrador_geral"
@@ -907,6 +926,15 @@ try:
     app.add_static_files("/laudos", _dir_laudos)
 except Exception as _e_laudos:
     print(f"[laudos] aviso: /laudos não montado: {_e_laudos}")
+
+# ================== BIBLIOTECA DE VÍDEOS (/midia_video/*) ==================
+# Os arquivos publicados ficam em `src/mod_video/biblioteca/` (fora do
+# versionamento) e são servidos em `/midia_video/<arquivo>`.
+try:
+    from mod_video.bd_manipulador import montar_rotas_static as _montar_midia_video
+    _montar_midia_video()
+except Exception as _e_midia_video:
+    print(f"[video] Aviso: não foi possível montar as rotas de /midia_video: {_e_midia_video}")
 
 app.on_startup(_montar_documentacao)
 

@@ -97,6 +97,7 @@ desenvolvimento fica no código, nunca na documentação.
 | Inspeção Industrial | `/inspecao-industrial` | `db_mod_inspecao_industrial.db` | estruturas, torres, linhas, equipamentos |
 | Eventos | `/eventos` | `db_mod_eventos.db` | público, fluxo, ocupação, multidão |
 | Perímetro e Segurança | `/perimetro` | `db_mod_perimetro.db` | perímetro físico, pontos cegos, iluminação, Wi-Fi/RF (BSSID em hash) |
+| Vídeos | `/video` | `db_mod_video.db` | baixar vídeos do YouTube e outros lugares, assistir, publicar na biblioteca |
 
 Há ainda o **Painel de Riscos** (`/riscos`), que agrega defesa civil,
 ambiental, obras, segurança e inspeção industrial num resumo municipal ou
@@ -125,6 +126,17 @@ módulo tem o atalho **Analisar IA**.
 > consulta a listas exigem base legal, convênio oficial, retenção limitada,
 > revisão humana e auditoria. O sistema entrega **triagem e evidência**, nunca
 > decisão automática de culpa.
+
+## Vídeos para download
+
+O módulo **Vídeos** (`/video`) baixa vídeos do YouTube e de outros lugares
+(via `yt-dlp`), do próprio canal do usuário ou de links avulsos, e organiza
+em **stage** (arquivos com prazo de expiração configurável) e
+**biblioteca** (acervo publicado pelo admin). Dá para assistir no sistema,
+baixar para o PC, gerar ZIP e converter texto em áudio. Todo pedido registra
+quem pediu, de onde (URL) e o quê — inclusive para conteúdo com direitos
+autorais, cuja responsabilidade é do usuário. Sem `yt-dlp` instalado, a tela
+avisa e as funções de verificação seguem operando.
 
 ## Estrutura
 

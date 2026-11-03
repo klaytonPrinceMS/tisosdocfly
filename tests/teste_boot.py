@@ -32,7 +32,7 @@ class TestBoot(unittest.TestCase):
             "tisosdocfly", "usuarios", "agro", "vistoria_predial",
             "seguranca", "ambiental", "obras", "mapeamento",
             "defesa_civil", "inspecao_industrial", "eventos",
-            "perimetro"})
+            "perimetro", "video"})
         for arquivo in MODULOS_BD.values():
             caminho = os.path.join(
                 os.environ["TISOSDOCFLY_DIR_BANCO"], arquivo)

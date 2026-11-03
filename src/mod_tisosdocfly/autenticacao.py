@@ -38,6 +38,7 @@ MODULOS_SISTEMA = [
      "precision_manufacturing", "/inspecao-industrial"),
     ("eventos", "Eventos", "groups", "/eventos"),
     ("perimetro", "Perímetro e Segurança", "security", "/perimetro"),
+    ("video", "Vídeos", "download", "/video"),
 ]
 
 CHAVE_POR_ROTA = {rota.strip("/"): chave for chave, _, _, rota in MODULOS_SISTEMA}

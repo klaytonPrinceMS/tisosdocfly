@@ -35,6 +35,10 @@ rich = ">=13.0"
 numpy = ">=1.26"
 pillow = ">=10.0"
 reportlab = ">=4.0"
+# Vídeos: download (YouTube e outros via yt-dlp) e voz neural (edge-tts).
+# O módulo degrada com aviso quando ausentes (fail-soft).
+yt-dlp = ">=2025.0"
+edge-tts = "^7.3.1"
 # Log estruturado. Toda função que trata exceção deve registrar a causa.
 loguru = ">=0.7.3"
 

@@ -3,6 +3,8 @@
 graphify-out/
 src/mod_tisosdocfly/laudos/
 src/mod_tisosdocfly/midia/
+src/mod_video/downloads/
+src/mod_video/biblioteca/
 site/
 logs/
 backup/

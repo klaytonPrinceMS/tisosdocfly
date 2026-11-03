@@ -33,6 +33,7 @@ editar arquivos.
 | `mod_inspecao_industrial` | Inspeção Industrial (MVP) | `/inspecao-industrial` | `db_mod_inspecao_industrial.db` |
 | `mod_eventos` | Eventos (MVP) | `/eventos` | `db_mod_eventos.db` |
 | `mod_perimetro` | Perímetro e segurança física/lógica (MVP) | `/perimetro` | `db_mod_perimetro.db` |
+| `mod_video` | Vídeos para download e biblioteca (estável) | `/video` | `db_mod_video.db` |
 
 Os nove módulos de negócio estão em **MVP textual**: tabelas, CRUD, telas,
 ocorrências e laudo resumido. IA/visão computacional, geoprocessamento e PDF
@@ -64,6 +65,7 @@ Módulos implementados em MVP (ver `docs/1_sistema/10_projeto/`):
 | Inspeção industrial | `inspecao_industrial` | análise, ocorrências, laudo textual | IA, PDF |
 | Eventos | `eventos` | análise, ocorrências, público | IA, PDF |
 | Perímetro e segurança | `perimetro` | auditoria física, Wi-Fi/RF, achados | varredura autorizada, IA, PDF |
+| Vídeos | `video` | download (YouTube e outros), stage, biblioteca, ZIP, texto em áudio | — |
 
 **Limite obrigatório em segurança pública:** reconhecimento de pessoas e
 consulta a listas exigem base legal, convênio oficial, retenção limitada,

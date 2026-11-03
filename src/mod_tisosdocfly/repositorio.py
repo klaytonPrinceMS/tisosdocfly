@@ -89,6 +89,7 @@ MODULOS_BD = {
     "inspecao_industrial": "db_mod_inspecao_industrial.db",
     "eventos": "db_mod_eventos.db",
     "perimetro": "db_mod_perimetro.db",
+    "video": "db_mod_video.db",
 }
 
 CHAVE_CENTRAL = "tisosdocfly"

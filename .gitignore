@@ -43,6 +43,10 @@ tests/screenshots/
 src/mod_tisosdocfly/laudos/
 src/mod_tisosdocfly/midia/
 
+# Vídeos: stage de downloads e biblioteca publicada
+src/mod_video/downloads/
+src/mod_video/biblioteca/
+
 # Saídas de ferramentas
 site/
 graphify-out/
