@@ -1,0 +1,41 @@
+/* Tema padrão com fonte Noticia (Lora + Poppins) e papel de parede com efeitos
+   Baseado em assets/noticia/css/fonts.css e main.css, mas sem sobrescrever o layout Quasar/NiceGUI.
+   Apenas tipografia + wallpaper sutil.
+*/
+
+/* Importa fontes Lora e Poppins do Noticia (caminhos relativos a /assets/noticia/) */
+@import url("/assets/noticia/css/fonts.css");
+
+/* Aplica fontes ao tema padrão: body Lora, títulos Poppins */
+body, .q-page, .q-card, .text-body1, .text-body2, .text-caption {
+  font-family: "lora-regular", "Noto Serif", serif !important;
+}
+h1, h2, h3, h4, h5, h6, .text-h1, .text-h2, .text-h3, .text-h4, .text-h5, .text-h6, .h01, .h02, .h03 {
+  font-family: "poppins-semibold", "Poppins", sans-serif !important;
+  letter-spacing: -0.02em;
+}
+
+/* Papel de parede com efeito sutil — overlay escuro + imagem intro-bg.jpg do Noticia */
+body {
+  background-color: #f6f7f9 !important;
+  background-image:
+    linear-gradient(rgba(246,247,249,0.92), rgba(246,247,249,0.92)),
+    url("/assets/noticia/images/intro-bg.jpg");
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center top;
+  background-repeat: no-repeat;
+}
+
+/* Efeito de profundidade no header/cabecalho e cards */
+.cabecalho-titulo {
+  text-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+.q-card {
+  backdrop-filter: blur(0.5px);
+}
+
+/* Suaviza transições para combinar com o estilo Noticia */
+a {
+  transition: color 0.25s ease-in-out;
+}

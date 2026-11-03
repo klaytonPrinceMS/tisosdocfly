@@ -1,0 +1,57 @@
+# Ambiente e artefatos Python
+.venv/
+.nicegui/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# Config local do Poetry (não versionada — cada máquina tem o seu caminho)
+poetry.toml
+
+# Segredos
+.env
+.env.*
+*.pem
+*.key
+
+# Bancos e estado de execução
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+logs/
+backup/
+
+# Testes: banco isolado e massa gerada (nunca versionar)
+tests/_bd_teste/
+tests/massa/
+tests/test-results/
+tests/playwright-report/
+tests/screenshots/
+
+# Laudos gerados (PDF) e mídia de voo
+src/mod_tisosdocfly/laudos/
+src/mod_tisosdocfly/midia/
+
+# Saídas de ferramentas
+site/
+graphify-out/
+node_modules/
+.opencode/node_modules/
+
+# Mídia de voos (arquivos enviados — fora do versionamento)
+src/mod_tisosdocfly/midia/
+
+# Sistema
+.DS_Store
+Thumbs.db

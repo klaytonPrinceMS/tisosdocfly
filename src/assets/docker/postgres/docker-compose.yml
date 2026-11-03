@@ -1,0 +1,34 @@
+# =============================================================================
+# PostgreSQL container for T! SOS DocFly Modular (optional backend)
+# =============================================================================
+# Suba com:
+#   cd assets/docker/postgres && docker compose up -d
+#
+# Depois, no /configuracoes → "Banco de dados", marque "PostgreSQL" e
+# REINICIE o servidor. Todos os módulos passam a usar o banco `tisosdocfly`
+# (um schema por módulo: tisosdocfly, blog, usuarios, auditoria, editar_pdf,
+# empenhos, solicita_impressao).
+#
+# ⚠️ Apenas desenvolvimento/staging — não exponha a porta 5432 em produção.
+# =============================================================================
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: tisosdocfly_postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-tisosdocfly}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tisosdocfly}
+      POSTGRES_DB: ${POSTGRES_DB:-tisosdocfly}
+    ports:
+      - "5432:5432"
+    volumes:
+      - tisosdocfly_pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-tisosdocfly} -d ${POSTGRES_DB:-tisosdocfly}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  tisosdocfly_pgdata:

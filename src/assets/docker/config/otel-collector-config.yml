@@ -1,0 +1,114 @@
+# =============================================================================
+# OTel Collector Configuration - T! SOS DocFly Modular
+# =============================================================================
+# Configuração do OpenTelemetry Collector para receber, processar e exportar
+# telemetria (logs, traces, métricas) para Tempo e Mimir.
+# O log é enviado ao Loki via OTLP HTTP.
+# Compatível com otel/opentelemetry-collector-contrib recente.
+# =============================================================================
+
+receivers:
+  # OTLP - OpenTelemetry Protocol
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  # Batch - Agrupa dados para eficiência
+  batch:
+    timeout: 5s
+    send_batch_size: 1024
+
+  # Memory limiter - Evita OOM
+  memory_limiter:
+    check_interval: 5s
+    limit_mib: 512
+    spike_limit_mib: 128
+
+  # Resource - Adiciona atributos aos dados
+  resource:
+    attributes:
+      - key: service.name
+        value: "tisosdocfly-modular"
+        action: upsert
+      - key: deployment.environment
+        value: "production"
+        action: upsert
+
+  # Probabilistic sampling - Reduz volume de traces
+  probabilistic_sampler:
+    sampling_percentage: 100
+
+exporters:
+  # Loki - Exportação de logs via OTLP HTTP (Loki 3.x aceita nativamente)
+  otlphttp/loki:
+    endpoint: http://loki:3100/otlp
+
+  # Tempo - Exportação de traces (OTLP gRPC)
+  otlp/tempo:
+    endpoint: tempo:4317
+    tls:
+      insecure: true
+
+  # Mimir - Exportação de métricas via OTLP HTTP (recomendado pela Grafana;
+  # evita o problema de compressão snappy do remote write)
+  otlphttp/mimir:
+    endpoint: http://mimir:9009/otlp
+
+  # Prometheus - Exportação de métricas do próprio collector (para scrape em 8889)
+  prometheus:
+    endpoint: 0.0.0.0:8889
+
+  # Debug - Log dos dados recebidos (útil para desenvolvimento)
+  debug:
+    verbosity: basic
+
+extensions:
+  # Health check - Endpoint de saúde
+  health_check:
+    endpoint: 0.0.0.0:8888
+
+  # Pprof - Profiling
+  pprof:
+    endpoint: 0.0.0.0:1777
+
+  # ZPages - Páginas de diagnóstico
+  zpages:
+    endpoint: 0.0.0.0:55679
+
+service:
+  extensions: [health_check, pprof, zpages]
+
+  pipelines:
+    # Pipeline de logs (enviados ao Loki via OTLP HTTP)
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, resource, batch]
+      exporters: [otlphttp/loki, debug]
+
+    # Pipeline de traces
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, resource, probabilistic_sampler, batch]
+      exporters: [otlp/tempo, debug]
+
+    # Pipeline de métricas
+    metrics:
+      receivers: [otlp]
+      processors: [memory_limiter, resource, batch]
+      exporters: [otlphttp/mimir, prometheus, debug]
+
+  telemetry:
+    logs:
+      level: info
+    metrics:
+      level: basic
+      readers:
+        - pull:
+            exporter:
+              prometheus:
+                host: 0.0.0.0
+                port: 9090

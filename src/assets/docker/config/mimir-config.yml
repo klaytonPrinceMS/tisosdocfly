@@ -1,0 +1,43 @@
+# =============================================================================
+# Mimir Configuration - T! SOS DocFly Modular
+# =============================================================================
+# Configuração do Mimir para armazenamento e consulta de métricas.
+# Compatível com Grafana Mimir v2.x
+# =============================================================================
+
+multitenancy_enabled: false
+
+server:
+  http_listen_port: 9009
+  log_level: warn
+
+common:
+  storage:
+    filesystem:
+      dir: /var/mimir
+
+limits:
+  ingestion_rate: 15000
+  ingestion_burst_size: 20000
+
+ingester:
+  ring:
+    kvstore:
+      store: inmemory
+    replication_factor: 1
+
+compactor:
+  data_dir: /var/mimir/compactor
+  sharding_ring:
+    kvstore:
+      store: inmemory
+
+blocks_storage:
+  backend: filesystem
+  filesystem:
+    dir: /var/mimir/data
+  tsdb:
+    dir: /var/mimir/tsdb
+
+activity_tracker:
+  filepath: /var/mimir/activity.log

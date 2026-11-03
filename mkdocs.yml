@@ -1,0 +1,108 @@
+site_name: T! SOS DocFly
+site_description: Projeto Python modular com NiceGUI, Poetry 3.13 e um banco independente por módulo.
+docs_dir: docs
+site_dir: site
+
+extra_css:
+  - stylesheets/extra.css
+
+theme:
+  # Mesmo tema da intranet: readthedocs, em português.
+  name: readthedocs
+  language: pt
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+plugins:
+  # Declarar `plugins:` desliga o padrão; `search` precisa ser nomeado.
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          # O código vive em `src/`; sem isto o griffe não acha os `mod_*`.
+          paths: [src]
+          options:
+            docstring_style: google
+            show_source: false
+            show_root_heading: true
+            members_order: source
+
+nav:
+  - Início: index.md
+  - Sistema:
+      - Ferramentas:
+          - Ambiente de desenvolvimento: 1_sistema/01_ferramentas/ambiente_desenvolvimento.md
+          - Graphify: 1_sistema/01_ferramentas/graphify.md
+          - IA e geoprocessamento: 1_sistema/01_ferramentas/ia_geoprocessamento.md
+          - Processamento multiespectral: 1_sistema/01_ferramentas/processamento_multiespectral.md
+      - Fundamentos:
+          - Visão geral: 1_sistema/02_fundamentos/01_visao_geral.md
+          - Início rápido: 1_sistema/02_fundamentos/02_inicio_rapido.md
+          - Configurações: 1_sistema/02_fundamentos/03_configuracoes.md
+      - Arquitetura:
+          - Arquitetura modular: 1_sistema/03_arquitetura/01_arquitetura.md
+          - Layout src/: 1_sistema/03_arquitetura/02_layout_src.md
+      - Interface:
+          - Estilo visual: 1_sistema/04_interface/01_estilo_visual.md
+      - Referência:
+          - main.py: 1_sistema/05_referencia/01_main.md
+          - Convenções de código: 1_sistema/05_referencia/02_convencoes.md
+      - Módulos:
+          - T! SOS DocFly (núcleo): 1_sistema/06_modulos/01_resumos/01_tisosdocfly.md
+          - Gestão de Usuários: 1_sistema/06_modulos/01_resumos/02_gest_cad_usuario.md
+          - Agropecuário: 1_sistema/06_modulos/01_resumos/03_agro.md
+          - Vistoria Predial: 1_sistema/06_modulos/01_resumos/04_vistoria_predial.md
+          - Segurança Pública: 1_sistema/06_modulos/01_resumos/05_seguranca.md
+          - Ambiental: 1_sistema/06_modulos/01_resumos/06_ambiental.md
+          - Obras: 1_sistema/06_modulos/01_resumos/07_obras.md
+          - Mapeamento: 1_sistema/06_modulos/01_resumos/08_mapeamento.md
+          - Defesa Civil: 1_sistema/06_modulos/01_resumos/09_defesa_civil.md
+          - Inspeção Industrial: 1_sistema/06_modulos/01_resumos/10_inspecao_industrial.md
+          - Eventos: 1_sistema/06_modulos/01_resumos/11_eventos.md
+          - Perímetro e Segurança: 1_sistema/06_modulos/01_resumos/12_perimetro.md
+      - Projeto:
+          - Visão de produto: 1_sistema/10_projeto/01_visao_produto/index.md
+          - Arquitetura futura: 1_sistema/10_projeto/02_arquitetura_futura/index.md
+          - Roadmap de módulos: 1_sistema/10_projeto/03_roadmap/index.md
+          - Serviços híbridos: 1_sistema/10_projeto/05_servicos_hibridos/index.md
+          - Referências:
+              - Embrapa — drones e gado: 1_sistema/10_projeto/04_referencias/embrapa_drones_gado.md
+              - Embrapa — scripts Python: 1_sistema/10_projeto/04_referencias/embrapa_scripts_python.md
+              - GeoIA — linhas de plantio: 1_sistema/10_projeto/04_referencias/geoia_linhas_plantio.md
+              - RWTV/Epagri — vistoria de lavouras: 1_sistema/10_projeto/04_referencias/rwtv_vistoria_lavouras.md
+      - Segurança:
+          - Contas de fábrica: 1_sistema/11_seguranca/01_contas_de_fabrica.md
+          - Conformidade ANAC/DECEA/SISANT: 1_sistema/11_seguranca/02_conformidade_anac_decea_sisant.md
+      - Registro de mudanças:
+          - Índice: 1_sistema/12_registro_mudancas/index.md
+  - Manuais:
+      - Instalação: 2_manuais/01_instalacao/index.md
+      - Administrador: 2_manuais/02_administrador/index.md
+      - Usuário comum: 2_manuais/03_usuario_comum/index.md
+      - Gestão de Usuários: 2_manuais/12_gest_cad_usuario/index.md
+      - T! SOS DocFly (núcleo): 2_manuais/14_tisosdocfly/index.md
+      - Agropecuário: 2_manuais/21_agro/index.md
+      - Vistoria Predial: 2_manuais/22_vistoria_predial/index.md
+      - Segurança Pública: 2_manuais/23_seguranca/index.md
+      - Ambiental: 2_manuais/24_ambiental/index.md
+      - Obras: 2_manuais/25_obras/index.md
+      - Mapeamento: 2_manuais/26_mapeamento/index.md
+      - Defesa Civil: 2_manuais/27_defesa_civil/index.md
+      - Inspeção Industrial: 2_manuais/28_inspecao_industrial/index.md
+      - Eventos: 2_manuais/29_eventos/index.md
+      - Perímetro e Segurança: 2_manuais/30_perimetro/index.md
+  - Testes:
+      - Casos: 3_testes/01_casos/index.md
+      - Plano: 3_testes/02_plano/index.md
+      - Relatórios: 3_testes/03_relatorios/index.md
+      - Suíte: 3_testes/06_suite.md

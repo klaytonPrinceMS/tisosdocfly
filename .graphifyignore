@@ -1,0 +1,27 @@
+# .graphifyignore — só exclui mais (nunca re-inclui o que o .gitignore já excluiu).
+# Runtime, artefatos e dependências fora do grafo commitável.
+graphify-out/
+src/mod_tisosdocfly/laudos/
+src/mod_tisosdocfly/midia/
+site/
+logs/
+backup/
+.venv/
+node_modules/
+.opencode/node_modules/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+htmlcov/
+build/
+dist/
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+*.py[cod]
+.env
+.env.*
+src/mod_tisosdocfly/midia/

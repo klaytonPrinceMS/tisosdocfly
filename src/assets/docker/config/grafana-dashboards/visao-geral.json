@@ -1,0 +1,248 @@
+{
+  "uid": "intranet-visao-geral",
+  "title": "Intranet - Visão Geral",
+  "tags": ["intranet", "observabilidade"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "editable": true,
+  "graphTooltip": 1,
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Serviços Ativos",
+      "gridPos": {"h": 4, "w": 4, "x": 0, "y": 0},
+      "id": 1,
+      "datasource": {"type": "prometheus", "uid": "mim"},
+      "targets": [
+        {"refId": "A", "expr": "count(count by (service_name) (intranet_requisicoes_total))", "legendFormat": "Ativos"}
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"value": 0, "color": "red"},
+              {"value": 1, "color": "green"}
+            ]
+          },
+          "unit": "none",
+          "mappings": []
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Taxa de Requisições",
+      "gridPos": {"h": 4, "w": 4, "x": 4, "y": 0},
+      "id": 2,
+      "datasource": {"type": "prometheus", "uid": "mim"},
+      "targets": [
+        {"refId": "A", "expr": "sum(rate(intranet_requisicoes_total[$__rate_interval]))", "legendFormat": "req/s"}
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"value": 0, "color": "blue"}
+            ]
+          },
+          "unit": "reqps"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Erros (última hora)",
+      "gridPos": {"h": 4, "w": 4, "x": 8, "y": 0},
+      "id": 3,
+      "datasource": {"type": "prometheus", "uid": "mim"},
+      "targets": [
+        {"refId": "A", "expr": "sum(increase(intranet_requisicoes_total{status=~\"4..|5..\"}[$__rate_interval]))", "legendFormat": "erros"}
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"value": 0, "color": "green"},
+              {"value": 1, "color": "yellow"},
+              {"value": 10, "color": "red"}
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Latência P95",
+      "gridPos": {"h": 4, "w": 4, "x": 12, "y": 0},
+      "id": 4,
+      "datasource": {"type": "prometheus", "uid": "mim"},
+      "targets": [
+        {"refId": "A", "expr": "histogram_quantile(0.95, sum(rate(intranet_requisicao_duracao_bucket[$__rate_interval])) by (le))", "legendFormat": "p95"}
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"value": 0, "color": "green"},
+              {"value": 1, "color": "yellow"},
+              {"value": 2, "color": "red"}
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Volume de Logs",
+      "gridPos": {"h": 4, "w": 4, "x": 16, "y": 0},
+      "id": 5,
+      "datasource": {"type": "loki", "uid": "loki"},
+      "targets": [
+        {"refId": "A", "queryType": "range", "expr": "count_over_time({service_name=~\"$service\"}[$__rate_interval])", "legendFormat": "logs/s"}
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"value": 0, "color": "blue"}
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Taxa de Erros (%)",
+      "gridPos": {"h": 4, "w": 4, "x": 20, "y": 0},
+      "id": 6,
+      "datasource": {"type": "prometheus", "uid": "mim"},
+      "targets": [
+        {"refId": "A", "expr": "sum(increase(intranet_requisicoes_total{status=~\"4..|5..\"}[$__rate_interval])) / sum(increase(intranet_requisicoes_total[$__rate_interval])) * 100", "legendFormat": "err %"}
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"value": 0, "color": "green"},
+              {"value": 50, "color": "yellow"},
+              {"value": 80, "color": "red"}
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Requisições por Segundo",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
+      "id": 7,
+      "datasource": {"type": "prometheus", "uid": "mim"},
+      "targets": [
+        {"refId": "A", "expr": "sum by (rota) (rate(intranet_requisicoes_total[$__rate_interval]))", "legendFormat": "{{rota}}"}
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {"drawStyle": "line", "fillOpacity": 10, "lineWidth": 1, "showPoints": "never"},
+          "unit": "reqps"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Erros HTTP (4xx/5xx) por Rota",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
+      "id": 8,
+      "datasource": {"type": "prometheus", "uid": "mim"},
+      "targets": [
+        {"refId": "A", "expr": "sum by (rota) (increase(intranet_requisicoes_total{status=~\"4..|5..\"}[$__rate_interval]))", "legendFormat": "{{rota}}"}
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {"drawStyle": "line", "fillOpacity": 10, "lineWidth": 1, "showPoints": "never"},
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Latência P50/P95/P99 (s)",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12},
+      "id": 9,
+      "datasource": {"type": "prometheus", "uid": "mim"},
+      "targets": [
+        {"refId": "A", "expr": "histogram_quantile(0.50, sum(rate(intranet_requisicao_duracao_bucket[$__rate_interval])) by (le))", "legendFormat": "p50"},
+        {"refId": "B", "expr": "histogram_quantile(0.95, sum(rate(intranet_requisicao_duracao_bucket[$__rate_interval])) by (le))", "legendFormat": "p95"},
+        {"refId": "C", "expr": "histogram_quantile(0.99, sum(rate(intranet_requisicao_duracao_bucket[$__rate_interval])) by (le))", "legendFormat": "p99"}
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {"drawStyle": "line", "fillOpacity": 10, "lineWidth": 1, "showPoints": "never"},
+          "unit": "s"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Uso de CPU por Serviço",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12},
+      "id": 10,
+      "datasource": {"type": "prometheus", "uid": "mim"},
+      "targets": [
+        {"refId": "A", "expr": "sum by (service_name) (rate(process_cpu_seconds_total[$__rate_interval])) * 100", "legendFormat": "{{service_name}}"}
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {"drawStyle": "line", "fillOpacity": 10, "lineWidth": 1, "showPoints": "never"},
+          "unit": "percent"
+        },
+        "overrides": []
+      }
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "service",
+        "label": "Serviço",
+        "type": "query",
+        "datasource": {"type": "prometheus", "uid": "mim"},
+        "query": "label_values(intranet_requisicoes_total, service_name)",
+        "includeAll": true,
+        "multi": true,
+        "current": {"selected": true, "text": "All", "value": "$__all"}
+      }
+    ]
+  },
+  "time": {"from": "now-6h", "to": "now"}
+}

@@ -1,0 +1,4 @@
+# AGENTS.md §8.1 (decisão 2026-09-17): .opencode/ é 100% versionado
+# (agents, plugins, skills, package.json/lock, opencode.json).
+# Só dependências reinstaláveis ficam de fora:
+node_modules
