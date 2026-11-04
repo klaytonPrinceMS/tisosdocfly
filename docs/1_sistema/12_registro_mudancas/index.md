@@ -1,5 +1,11 @@
 # Registro de mudanças
 
+## 04/11/2026 — documentação da entrega inicial
+
+- Registrada a publicação original (`d4c84f9`), a reorganização para
+  T! SOS DocFly (`c7d52df` → `424ba38`) e a preservação do histórico.
+- Detalhes em [Entrega inicial — commit e push](01_entrega_inicial.md).
+
 ## 03/11/2026 — voo multidrone
 
 - Campo Drone sem valor padrão (aceita qualquer equipamento); laudo mostra

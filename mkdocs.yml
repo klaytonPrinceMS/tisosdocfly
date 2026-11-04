@@ -86,6 +86,7 @@ nav:
           - Conformidade ANAC/DECEA/SISANT: 1_sistema/11_seguranca/02_conformidade_anac_decea_sisant.md
       - Registro de mudanças:
           - Índice: 1_sistema/12_registro_mudancas/index.md
+          - Entrega inicial — commit e push: 1_sistema/12_registro_mudancas/01_entrega_inicial.md
   - Manuais:
       - Instalação: 2_manuais/01_instalacao/index.md
       - Administrador: 2_manuais/02_administrador/index.md
