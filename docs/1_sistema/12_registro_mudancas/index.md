@@ -1,5 +1,10 @@
 # Registro de mudanças
 
+## 04/11/2026 — documentação da entrega inicial
+
+- Registrada a publicação do commit `d4c84f9` em `main`/`origin`.
+- Detalhes em [Entrega inicial — commit e push](01_entrega_inicial.md).
+
 ## 02/11/2026 — serviços híbridos e painel de riscos
 
 - Catálogo dos três serviços híbridos: perímetro/segurança, inspeção com PDF
